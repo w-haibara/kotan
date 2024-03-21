@@ -1,0 +1,7 @@
+[Unit]
+
+[Service]
+ExecStart=echo "Hello, World!"
+ExecStop=echo "Goodbye, World!"
+
+[Install]
