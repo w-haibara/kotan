@@ -49,7 +49,7 @@ func List() ([]string, error) {
 	return names, nil
 }
 
-func Parse(name string) (Unit, error) {
+func Load(name string) (Unit, error) {
 	ext := filepath.Ext(name)
 	if !slices.Contains(unitTypes, ext) {
 		return nil, fmt.Errorf("unknown unit type: %s", ext)
@@ -61,7 +61,7 @@ func Parse(name string) (Unit, error) {
 	case unitTypeService:
 		service, err := NewService(name, path)
 		if err != nil {
-			log.Error("failed to parce service file", "err", err)
+			log.Error("failed to load service file", "err", err)
 			return nil, err
 		}
 		return service, nil

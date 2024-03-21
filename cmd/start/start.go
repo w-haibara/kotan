@@ -18,7 +18,7 @@ func Cmd() *cobra.Command {
 }
 
 func start(cmd *cobra.Command, args []string) error {
-	unit, err := unit.Parse(args[0])
+	unit, err := unit.Load(args[0])
 	if err != nil {
 		return err
 	}
