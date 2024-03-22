@@ -1,9 +1,8 @@
 package daemon
 
 import (
-	"github.com/w-haibara/kotan/unit"
-
 	"github.com/charmbracelet/log"
+	"github.com/w-haibara/kotan/unit"
 )
 
 type RPC struct{}

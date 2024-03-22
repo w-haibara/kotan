@@ -3,10 +3,9 @@ package client
 import (
 	"net/rpc"
 
+	"github.com/charmbracelet/log"
 	"github.com/w-haibara/kotan/config"
 	"github.com/w-haibara/kotan/daemon"
-
-	"github.com/charmbracelet/log"
 )
 
 func ListUnit(req daemon.ListUnitReq) (*daemon.ListUnitResp, error) {

@@ -3,10 +3,9 @@ package unit
 import (
 	"io"
 
+	"github.com/charmbracelet/log"
 	"github.com/w-haibara/kotan/exec"
 	"github.com/w-haibara/kotan/journal"
-
-	"github.com/charmbracelet/log"
 	"gopkg.in/ini.v1"
 )
 

@@ -9,10 +9,9 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"github.com/charmbracelet/log"
 	"github.com/w-haibara/kotan/config"
 	"github.com/w-haibara/kotan/unit"
-
-	"github.com/charmbracelet/log"
 )
 
 func init() {
