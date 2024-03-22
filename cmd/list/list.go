@@ -19,12 +19,12 @@ func Cmd() *cobra.Command {
 }
 
 func list(cmd *cobra.Command, args []string) error {
-	units, err := unit.List()
-	if err != nil {
-		return err
-	}
+	units := unit.List()
 
-	fmt.Println(units)
+	// TODO: Pretty print units
+	for _, u := range units {
+		fmt.Println(u.Name)
+	}
 
 	return nil
 }

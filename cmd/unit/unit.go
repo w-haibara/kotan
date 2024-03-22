@@ -12,6 +12,7 @@ import (
 )
 
 type Unit interface {
+	Name() string
 	Start() error
 	Stop() error
 	Status() error
@@ -23,36 +24,42 @@ const (
 	unitTypeTarget  = ".target"
 )
 
-var (
-	unitTypes = []string{
-		unitTypeService,
-		unitTypeTimer,
-		unitTypeTarget,
-	}
-)
+var unitTypes = []string{
+	unitTypeService,
+	unitTypeTimer,
+	unitTypeTarget,
+}
 
-func List() ([]string, error) {
+var unitMap = make(map[string]Unit)
+
+func init() {
+	LoadAll()
+}
+
+func LoadAll() error {
 	files, err := os.ReadDir(config.UnitFileDir)
 	if err != nil {
 		log.Error("failed to read unit files", "err", err)
-		return nil, err
+		return err
 	}
 
-	var names []string
 	for _, file := range files {
 		name := file.Name()
 		if slices.Contains(unitTypes, filepath.Ext(name)) {
-			names = append(names, name)
+			if err := Load(file.Name()); err != nil {
+				log.Error("failed to load unit", "name", name, "err", err)
+				return err
+			}
 		}
 	}
 
-	return names, nil
+	return nil
 }
 
-func Load(name string) (Unit, error) {
+func Load(name string) error {
 	ext := filepath.Ext(name)
 	if !slices.Contains(unitTypes, ext) {
-		return nil, fmt.Errorf("unknown unit type: %s", ext)
+		return fmt.Errorf("unknown unit type: %s", ext)
 	}
 
 	path := path.Join(config.UnitFileDir, name)
@@ -62,16 +69,45 @@ func Load(name string) (Unit, error) {
 		service, err := NewService(name, path)
 		if err != nil {
 			log.Error("failed to load service file", "err", err)
-			return nil, err
+			return err
 		}
-		return service, nil
+
+		unitMap[name] = service
+
+		return nil
 	case unitTypeTimer:
 		log.Warn("timer unit is not implemented yet")
-		return nil, nil
+		return nil
 	case unitTypeTarget:
 		log.Warn("target unit is not implemented yet")
-		return nil, nil
+		return nil
 	default:
-		return nil, fmt.Errorf("unknown unit type: %s", ext)
+		return fmt.Errorf("unknown unit type: %s", ext)
 	}
+}
+
+type UnitInfo struct {
+	Name string
+	Unit Unit
+}
+
+func List() map[string]UnitInfo {
+	units := make(map[string]UnitInfo)
+	for name := range unitMap {
+		units[name] = UnitInfo{
+			Name: name,
+			Unit: unitMap[name],
+		}
+	}
+
+	return units
+}
+
+func Find(name string) (Unit, error) {
+	unit, ok := unitMap[name]
+	if !ok {
+		return nil, fmt.Errorf("unit not found: %s", name)
+	}
+
+	return unit, nil
 }

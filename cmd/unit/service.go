@@ -11,11 +11,13 @@ import (
 )
 
 type Service struct {
-	Name          string
-	Type          string
-	ExecStart     string
-	ExecStop      string
+	name          string
+	loaded        bool
+	runnning      bool
 	journalWriter io.Writer
+
+	execStart string
+	execStop  string
 }
 
 func NewService(name string, path string) (*Service, error) {
@@ -28,27 +30,48 @@ func NewService(name string, path string) (*Service, error) {
 	section := unit.Section("Service")
 
 	return &Service{
-		Name:          name,
-		ExecStart:     section.Key("ExecStart").String(),
-		ExecStop:      section.Key("ExecStop").String(),
+		name:          name,
+		loaded:        true,
+		runnning:      false,
 		journalWriter: journal.NewWriter(name),
+
+		execStart: section.Key("ExecStart").String(),
+		execStop:  section.Key("ExecStop").String(),
 	}, nil
 }
 
+func (s *Service) Name() string {
+	return s.name
+}
+
 func (s *Service) Start() error {
-	if err := exec.Exec(s.journalWriter, s.ExecStart); err != nil {
-		log.Error("failed to start service", "name", s.Name, "err", err)
+	if s.runnning {
+		log.Warn("service is already running", "name", s.name)
+		return nil
+	}
+
+	if err := exec.Exec(s.journalWriter, s.execStart); err != nil {
+		log.Error("failed to start service", "name", s.name, "err", err)
 		return err
 	}
+
+	s.runnning = true
 
 	return nil
 }
 
 func (s *Service) Stop() error {
-	if err := exec.Exec(s.journalWriter, s.ExecStop); err != nil {
-		log.Error("failed to stop service", "name", s.Name, "err", err)
+	if !s.runnning {
+		log.Warn("service is already stopped", "name", s.name)
+		return nil
+	}
+
+	if err := exec.Exec(s.journalWriter, s.execStop); err != nil {
+		log.Error("failed to stop service", "name", s.name, "err", err)
 		return err
 	}
+
+	s.runnning = false
 
 	return nil
 }
