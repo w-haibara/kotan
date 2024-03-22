@@ -4,9 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/w-haibara/kotan/cmd/list"
-	"github.com/w-haibara/kotan/cmd/start"
-	"github.com/w-haibara/kotan/cmd/stop"
+	"github.com/w-haibara/kotan/cmd/unit"
 )
 
 func Execute() {
@@ -22,9 +20,7 @@ func rootCmd() *cobra.Command {
 		Long:  "--- --- --- ---",
 	}
 
-	cmd.AddCommand(list.Cmd())
-	cmd.AddCommand(start.Cmd())
-	cmd.AddCommand(stop.Cmd())
+	cmd.AddCommand(unit.Cmd())
 
 	return &cmd
 }
