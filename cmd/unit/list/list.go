@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/w-haibara/kotan/unit"
+	"github.com/w-haibara/kotan/client"
+	"github.com/w-haibara/kotan/daemon"
 )
 
 func Cmd() *cobra.Command {
@@ -19,10 +20,13 @@ func Cmd() *cobra.Command {
 }
 
 func list(cmd *cobra.Command, args []string) error {
-	units := unit.List()
+	resp, err := client.ListUnit(daemon.ListUnitReq{})
+	if err != nil {
+		return err
+	}
 
 	// TODO: Pretty print units
-	for _, u := range units {
+	for _, u := range resp.UnitInfo {
 		fmt.Println(u.Name)
 	}
 

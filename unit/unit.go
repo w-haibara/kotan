@@ -32,10 +32,6 @@ var unitTypes = []string{
 
 var unitMap = make(map[string]Unit)
 
-func init() {
-	LoadAll()
-}
-
 func LoadAll() error {
 	files, err := os.ReadDir(config.UnitFileDir)
 	if err != nil {
@@ -88,7 +84,6 @@ func Load(name string) error {
 
 type UnitInfo struct {
 	Name string
-	Unit Unit
 }
 
 func List() map[string]UnitInfo {
@@ -96,7 +91,6 @@ func List() map[string]UnitInfo {
 	for name := range unitMap {
 		units[name] = UnitInfo{
 			Name: name,
-			Unit: unitMap[name],
 		}
 	}
 

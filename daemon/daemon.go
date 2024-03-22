@@ -10,9 +10,14 @@ import (
 	"syscall"
 
 	"github.com/w-haibara/kotan/config"
+	"github.com/w-haibara/kotan/unit"
 
 	"github.com/charmbracelet/log"
 )
+
+func init() {
+	unit.LoadAll()
+}
 
 func Run() {
 	log.Info("daemon is starting")
