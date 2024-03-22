@@ -22,8 +22,16 @@ func Exec(w io.Writer, script string) error {
 		return err
 	}
 
-	go io.Copy(w, stdout)
-	go io.Copy(w, stderr)
+	go func() {
+		if _, err := io.Copy(w, stdout); err != nil {
+			log.Error("failed to copy stdout", "err", err)
+		}
+	}()
+	go func() {
+		if _, err := io.Copy(w, stderr); err != nil {
+			log.Error("failed to copy stderr", "err", err)
+		}
+	}()
 
 	if err := cmd.Start(); err != nil {
 		log.Error("failed to start command", "err", err)

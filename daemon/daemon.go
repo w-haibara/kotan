@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/w-haibara/kotan/config"
@@ -15,7 +16,10 @@ import (
 )
 
 func init() {
-	unit.LoadAll()
+	if err := unit.LoadAll(); err != nil {
+		log.Error("failed to load units", "err", err)
+		panic(err.Error())
+	}
 }
 
 func Run() {
@@ -34,7 +38,11 @@ func Run() {
 	log.Info("listening", "path", l.Addr().String())
 
 	rpc.HandleHTTP()
-	if err := http.Serve(l, nil); err != nil {
+
+	server := &http.Server{
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+	if err := server.Serve(l); err != nil {
 		log.Error("failed to serve", "err", err)
 		panic(err.Error())
 	}
@@ -63,7 +71,7 @@ func registerRpcs() {
 func sockPath() string {
 	path := config.UnixDomainSocketPath
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 			log.Error("failed to create directory", "err", err, "path", path)
 			panic(err.Error())
 		}
