@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/w-haibara/kotan/cmd/unit"
+	"github.com/w-haibara/kotan/unit"
 )
 
 func Cmd() *cobra.Command {
