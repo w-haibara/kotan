@@ -10,16 +10,12 @@ func Cmd() *cobra.Command {
 		Use:   "daemon",
 		Short: "---",
 		Long:  "--- --- --- ---",
-		RunE:  run,
+		Run:   run,
 	}
 
 	return &cmd
 }
 
-func run(cmd *cobra.Command, args []string) error {
-	if err := daemon.Run(); err != nil {
-		return err
-	}
-
-	return nil
+func run(cmd *cobra.Command, args []string) {
+	daemon.Run()
 }
