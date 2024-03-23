@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/w-haibara/kotan/exec"
 	"github.com/w-haibara/kotan/journal"
+	"github.com/w-haibara/kotan/worker"
 	"gopkg.in/ini.v1"
 )
 
@@ -49,10 +50,11 @@ func (s *Service) Start() error {
 		return nil
 	}
 
-	if err := exec.Exec(s.journalWriter, s.execStart); err != nil {
-		log.Error("failed to start service", "name", s.name, "err", err)
-		return err
-	}
+	worker.Enqueue("start:"+s.name, func() {
+		if err := exec.Exec(s.journalWriter, s.execStart); err != nil {
+			log.Error("failed to start service", "name", s.name, "err", err)
+		}
+	})
 
 	s.runnning = true
 
@@ -65,10 +67,11 @@ func (s *Service) Stop() error {
 		return nil
 	}
 
-	if err := exec.Exec(s.journalWriter, s.execStop); err != nil {
-		log.Error("failed to stop service", "name", s.name, "err", err)
-		return err
-	}
+	worker.Enqueue("stop:"+s.name, func() {
+		if err := exec.Exec(s.journalWriter, s.execStop); err != nil {
+			log.Error("failed to stop service", "name", s.name, "err", err)
+		}
+	})
 
 	s.runnning = false
 

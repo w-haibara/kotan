@@ -8,7 +8,7 @@ import (
 )
 
 func Exec(w io.Writer, script string) error {
-	log.Debug("execute command", "script", script)
+	log.Info("execute command", "script", script)
 	cmd := exec.Command("bash", "-c", script)
 
 	stdout, err := cmd.StdoutPipe()

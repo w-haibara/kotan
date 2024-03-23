@@ -15,8 +15,10 @@ type ListUnitResp struct {
 func (rpc *RPC) ListUnit(req *ListUnitReq, resp *ListUnitResp) error {
 	log.Info("Call ListUnit", "req", req)
 
+	info := unit.List()
+
 	*resp = ListUnitResp{
-		UnitInfo: unit.List(),
+		UnitInfo: info,
 	}
 
 	log.Info("Call ListUnit", "resp", resp)
