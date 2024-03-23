@@ -13,9 +13,10 @@ import (
 
 type Unit interface {
 	Name() string
+	Status() string
+	SetStatus(status) error
 	Start() error
 	Stop() error
-	Status() error
 }
 
 const (
@@ -62,7 +63,7 @@ func Load(name string) error {
 
 	switch ext {
 	case unitTypeService:
-		service, err := NewService(name, path)
+		service, err := LoadService(name, path)
 		if err != nil {
 			log.Error("failed to load service file", "err", err)
 			return err
@@ -104,4 +105,13 @@ func Find(name string) (Unit, error) {
 	}
 
 	return unit, nil
+}
+
+func SetStatus(name string, status status) error {
+	unit, err := Find(name)
+	if err != nil {
+		return err
+	}
+
+	return unit.SetStatus(status)
 }
